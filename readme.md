@@ -1,6 +1,6 @@
 # Tile Playground
 
-O projeto transforma a imagem da câmara numa grelha de mini quadrados que reagem ao movimento em tempo real. Uma superficie interativa artística de exprimentação e brincadeira. :) 
+O projeto transforma a imagem da câmara do utilizador numa grelha de mini quadrados que reagem ao movimento em tempo real. Uma superficie interativa artística de exprimentação e brincadeira. :) 
 
 **Ingredientes do Projeto**
 - Input: Vídeo da câmara em tempo real.
