@@ -6,7 +6,7 @@ O projeto transforma a imagem da câmara do utilizador num sistema de partícula
 **Ingredientes do Projeto**
 - Input: Vídeo da câmara em tempo real.
 - Expressão: Sistema de partículas dinâmicas com cálculo de diferença de frames e forças físicas para detetar e reagir ao movimento.
-- Output: Visual dinâmico no ecrã. 
+- Output: Expriência interativa 
 
 **Fontes e Uso de IA**
 - Documentação de referência: [p5.js Reference](https://p5js.org/reference/)
