@@ -1,6 +1,6 @@
 # Céu estrelado
 
-O projeto transforma a imagem da câmara do utilizador num sistema de partículas que reagem e agitam-se com o movimento captado em tempo real. Uma superficie digital interativa artística de exprimentação e brincadeira. :) 
+O projeto transforma a imagem da câmara do utilizador num sistema de partículas que reagem e agitam-se com o movimento captado em tempo real. Uma plataforma digital interativa artística de exprimentação e brincadeira. :) 
 
 
 **Ingredientes do Projeto**
