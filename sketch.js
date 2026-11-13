@@ -95,11 +95,10 @@ class Particula {
   mostrar(r, g, b) {
     noStroke();
     if (this.corAtiva) {
-      // Quando te mexes: amarelo brilhante
       fill(255, 230, 0, 220);
       circle(this.x, this.y, this.tamanhoBase * 2.2);
     } else {
-      // Em repouso: tom neutro baseado na imagem da câmara
+      
       let mediaCor = (r + g + b) / 3;
       fill(mediaCor, 150);
       circle(this.x, this.y, this.tamanhoBase);
