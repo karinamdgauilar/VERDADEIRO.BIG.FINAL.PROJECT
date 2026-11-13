@@ -1,92 +1,113 @@
 let video;
 let imagemAnterior;
+let particulas = [];
+const NUM_PARTICULAS = 450;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
   video = createCapture(VIDEO);
-  video.size(90, 70);
+  video.size(80, 60);
   video.hide();
   
-  imagemAnterior = createImage(90, 70);
+  imagemAnterior = createImage(80, 60);
+
+  for (let i = 0; i < NUM_PARTICULAS; i++) {
+    particulas.push(new Particula());
+  }
 }
 
 function draw() {
-  background(10, 12, 18, 70);
+  background(0, 40);
 
   video.loadPixels();
   
-  if (video.pixels.length > 0) {
+  if (video.pixels.length > 0 && imagemAnterior.pixels.length > 0) {
     let cols = video.width;
     let rows = video.height;
-    
-    let tamanhoCelulaW = width / cols;
-    let tamanhoCelulaH = height / rows;
 
-    push();
-    translate(width, 0);
-    scale(-1, 1);
+    for (let p of particulas) {
+      let vx = floor(map(p.x, 0, width, cols - 1, 0, true));
+      let vy = floor(map(p.y, 0, height, 0, rows - 1, true));
+      let index = (vx + vy * cols) * 4;
 
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        let index = (x + y * cols) * 4;
-        
-        let r = video.pixels[index];
-        let g = video.pixels[index + 1];
-        let b = video.pixels[index + 2];
-        
-        let brilho = (r + g + b) / 3;
+      let r = video.pixels[index];
+      let g = video.pixels[index + 1];
+      let b = video.pixels[index + 2];
 
-        let rAnt = imagemAnterior.pixels[index];
-        let gAnt = imagemAnterior.pixels[index + 1];
-        let bAnt = imagemAnterior.pixels[index + 2];
-        let diferencaMovimento = abs(r - rAnt) + abs(g - gAnt) + abs(b - bAnt);
+      let rAnt = imagemAnterior.pixels[index];
+      let gAnt = imagemAnterior.pixels[index + 1];
+      let bAnt = imagemAnterior.pixels[index + 2];
 
-        let fatorDinamico = map(diferencaMovimento, 0, 120, 0.8, 2.4, true);
-        let diametro = map(brilho, 0, 255, 0, tamanhoCelulaW * 1.3) * fatorDinamico;
-        
-        let posX = x * tamanhoCelulaW + tamanhoCelulaW / 2;
-        let posY = y * tamanhoCelulaH + tamanhoCelulaH / 2;
+      let diferenca = abs(r - rAnt) + abs(g - gAnt) + abs(b - bAnt);
 
-        let corPonto;
-        if (diferencaMovimento > 30) {
-          corPonto = color(255, 45, 135); 
-        } else {
-          corPonto = color(r, g, b);
-        }
-
-        fill(corPonto);
-        noStroke();
-
-        rectMode(CENTER);
-        let cantoArredondado = map(diferencaMovimento, 0, 100, 2, 8, true);
-        rect(posX, posY, diametro * 0.75, diametro * 0.75, cantoArredondado);
+      if (diferenca > 45) {
+        p.aplicarForca(diferenca * 0.04);
+        p.corAtiva = true;
+      } else {
+        p.corAtiva = false;
       }
+
+      p.atualizar();
+      p.mostrar(r, g, b);
     }
-    pop();
 
     imagemAnterior.copy(video, 0, 0, cols, rows, 0, 0, cols, rows);
     imagemAnterior.loadPixels();
+  } else if (video.pixels.length > 0) {
+    imagemAnterior.copy(video, 0, 0, video.width, video.height, 0, 0, video.width, video.height);
+    imagemAnterior.loadPixels();
+  }
+}
+
+class Particula {
+  constructor() {
+    this.x = random(width);
+    this.y = random(height);
+    this.vx = random(-0.5, 0.5);
+    this.vy = random(-0.5, 0.5);
+    this.tamanhoBase = random(3, 7);
+    this.corAtiva = false;
   }
 
-  desenharUI();
-}
+  aplicarForca(intensidade) {
+    let angulo = random(TWO_PI);
+    this.vx += cos(angulo) * intensidade;
+    this.vy += sin(angulo) * intensidade;
+  }
 
-function desenharUI() {
-  noStroke();
-  fill(170, 190, 210);
-  
-  textAlign(RIGHT, BOTTOM);
-  textSize(12);
-  text("S: Guardar Captura PNG", width - 24, height - 20);
-}
+  atualizar() {
+    this.x += this.vx;
+    this.y += this.vy;
 
-function keyPressed() {
-  if (key === 's' || key === 'S') {
-    saveCanvas('EcoForma_Movimento', 'png');
+    this.vx *= 0.92;
+    this.vy *= 0.92;
+
+    this.vx += random(-0.08, 0.08);
+    this.vy += random(-0.08, 0.08);
+
+    if (this.x < 0) this.x = width;
+    if (this.x > width) this.x = 0;
+    if (this.y < 0) this.y = height;
+    if (this.y > height) this.y = 0;
+  }
+
+  mostrar(r, g, b) {
+    noStroke();
+    if (this.corAtiva) {
+      // Quando te mexes: amarelo brilhante
+      fill(255, 230, 0, 220);
+      circle(this.x, this.y, this.tamanhoBase * 2.2);
+    } else {
+      // Em repouso: tom neutro baseado na imagem da câmara
+      let mediaCor = (r + g + b) / 3;
+      fill(mediaCor, 150);
+      circle(this.x, this.y, this.tamanhoBase);
+    }
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  background(0);
 }
